@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Barrio Brasa · Tu ritmo, tu brasa</title>
+<meta name="description" content="Presentación interactiva sobre posicionamiento y diferenciación de Barrio Brasa, hamburguesas a la parrilla con sabores peruanos.">
+<meta name="theme-color" content="#1C1A19">
+<style>
+:root{
+  --brasa:#E8571E; --brasa-d:#B23A0A; --brasa-l:#FF8A4C;
+  --carbon:#1C1A19; --carbon-2:#2A2725; --carbon-3:#3A3633;
+  --crema:#F6EBD9; --crema-2:#EDDCC1; --crema-3:#E2CBA8;
+  --ink:#1C1A19; --muted:#5E544C; --muted-d:#BFB2A3;
+  --ok:#3E7D3A;
+  --font-t: ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold","Nunito","Varela Round","Trebuchet MS",system-ui,sans-serif;
+  --font-b: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0E0D0C;color:var(--ink);font-family:var(--font-b);-webkit-font-smoothing:antialiased}
+button{font:inherit}
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- Escenario ---------- */
+.app{height:100vh;height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:10px}
+.deck{position:relative;width:min(100%, calc((100dvh - 84px) * 16 / 9));aspect-ratio:16/9;container-type:inline-size;overflow:hidden;border-radius:14px;background:var(--carbon);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.progress{position:absolute;left:0;top:0;height:4px;background:var(--brasa);z-index:5;transition:width .5s ease}
+.slide{position:absolute;inset:0;font-size:1.25cqw;padding:3.6em 5em 3.2em;display:flex;flex-direction:column;opacity:0;visibility:hidden;transition:opacity .55s ease, visibility 0s linear .55s;overflow:hidden}
+.slide.active{opacity:1;visibility:visible;transition:opacity .55s ease}
+.slide.dark{background:var(--carbon);color:var(--crema)}
+.slide.light{background:var(--crema);color:var(--ink)}
+.slide .rv{opacity:0;transform:translateY(16px);transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--d,0) * 90ms)}
+.slide.active .rv{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){ .slide,.slide .rv{transition:none!important} .slide .rv{opacity:1;transform:none} .layer{animation:none!important} }
+
+/* ---------- Tipografía ---------- */
+.kicker{font-family:var(--font-t);font-weight:800;letter-spacing:.08em;text-transform:uppercase;font-size:.9em;color:var(--brasa-d);margin:0 0 .4em}
+.dark .kicker{color:var(--brasa-l)}
+h1,h2,h3{font-family:var(--font-t);font-weight:900;line-height:1.02;margin:0;letter-spacing:-.01em}
+h2{font-size:2.9em;margin-bottom:.45em}
+h3{font-size:1.25em;margin-bottom:.3em}
+p{margin:0;line-height:1.4}
+.lead{font-size:1.35em;line-height:1.35}
+.small{font-size:.85em}
+.muted{color:var(--muted)}
+.dark .muted{color:var(--muted-d)}
+.hl{color:var(--brasa)}
+.light .hl{color:var(--brasa-d)}
+.tag{display:inline-block;font-family:var(--font-t);font-weight:800;font-size:.72em;letter-spacing:.06em;text-transform:uppercase;padding:.35em .8em;border-radius:99px;background:var(--brasa);color:#fff}
+.tag.ghost{background:transparent;border:1.5px solid currentColor;color:inherit;opacity:.85}
+.note{font-size:.8em;opacity:.85;display:flex;gap:.5em;align-items:flex-start}
+.note::before{content:"i";flex:none;width:1.4em;height:1.4em;border-radius:50%;display:grid;place-items:center;font-weight:800;font-family:var(--font-t);background:currentColor;color:var(--crema);font-size:.9em}
+.dark .note::before{color:var(--carbon)}
+
+.card{background:#fff;border-radius:1.1em;padding:1.2em 1.3em;box-shadow:0 .2em .8em rgba(28,26,25,.08)}
+.dark .card{background:var(--carbon-2);box-shadow:none;border:1px solid var(--carbon-3)}
+.grow{flex:1;min-height:0}
+.row{display:flex;gap:1.4em}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.1em}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2em}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1em}
+.ico{width:2.6em;height:2.6em;border-radius:.8em;display:grid;place-items:center;background:var(--crema-2);margin-bottom:.6em}
+.dark .ico{background:var(--carbon-3)}
+.ico svg{width:1.6em;height:1.6em}
+
+/* ---------- 1 Portada ---------- */
+.cover{display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:2em;height:100%}
+.cover::after{content:"";position:absolute;right:-10%;bottom:-30%;width:70%;aspect-ratio:1;background:radial-gradient(circle, rgba(232,87,30,.35), transparent 65%);pointer-events:none}
+.brandline{display:flex;align-items:center;gap:.7em;margin-bottom:1.4em}
+.brandline svg{width:3.2em;height:3.2em}
+.cover h1{font-size:6.4em;line-height:.92}
+.cover h1 span{display:block;color:var(--brasa)}
+.slogan{font-family:var(--font-t);font-weight:800;font-size:2em;margin-top:.4em;color:var(--crema)}
+.cover .hero{position:relative;z-index:1}
+.cover .hero svg{width:100%;height:auto;filter:drop-shadow(0 1.5em 2em rgba(0,0,0,.45))}
+
+/* ---------- 2 Ocasión ---------- */
+.scene{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4em;margin-top:.6em}
+.beat{position:relative;padding:1.6em 1.5em 1.5em;border-radius:1.3em;background:#fff;box-shadow:0 .2em .8em rgba(28,26,25,.08)}
+.beat .time{font-family:var(--font-t);font-weight:900;font-size:2.4em;color:var(--brasa-d)}
+.beat .big-ico{width:4.2em;height:4.2em;margin-bottom:.8em}
+.beat p{font-size:1.15em}
+.beat:not(:last-child)::after{content:"";position:absolute;right:-1.15em;top:50%;width:.9em;height:.9em;border-top:3px solid var(--brasa);border-right:3px solid var(--brasa);transform:translateY(-50%) rotate(45deg)}
+.quote-line{margin-top:1.6em;font-family:var(--font-t);font-weight:800;font-size:1.7em;text-align:center}
+
+/* ---------- 3 Segmentación ---------- */
+.seg{display:grid;grid-template-columns:1.6fr 1fr;gap:1.4em;flex:1;min-height:0}
+.seg .card h3{display:flex;align-items:center;gap:.4em}
+.seg .card p{font-size:.98em}
+.persona{background:var(--carbon);color:var(--crema);border-radius:1.3em;padding:1.6em;display:flex;flex-direction:column;gap:.8em;position:relative;overflow:hidden}
+.persona::after{content:"";position:absolute;right:-3em;top:-3em;width:10em;height:10em;border-radius:50%;background:var(--brasa);opacity:.9}
+.persona .tag{align-self:flex-start;position:relative;z-index:1;background:var(--crema);color:var(--carbon)}
+.persona h3{font-size:1.7em;position:relative;z-index:1}
+.persona ul{margin:0;padding:0;list-style:none;display:grid;gap:.55em}
+.persona li{display:flex;gap:.6em;line-height:1.35}
+.persona li::before{content:"";flex:none;width:.55em;height:.55em;margin-top:.45em;border-radius:50%;background:var(--brasa)}
+
+/* ---------- 4 Competencia ---------- */
+.comp{display:grid;grid-template-columns:1.55fr 1fr;gap:1.6em;flex:1;min-height:0;align-items:stretch}
+.map{background:#fff;border-radius:1.2em;padding:1em;display:flex}
+.map svg{width:100%;height:100%}
+.map text{font-family:var(--font-b)}
+.comp .side{display:flex;flex-direction:column;gap:1em;justify-content:center}
+.legend{display:grid;gap:.5em;font-size:.92em}
+.legend span{display:flex;gap:.6em;align-items:center}
+.dot{width:1em;height:1em;border-radius:50%;flex:none;background:var(--carbon-3)}
+.dot.bb{background:var(--brasa);outline:2px dashed var(--brasa);outline-offset:2px}
+
+/* ---------- 5 Posicionamiento ---------- */
+.pos{display:grid;grid-template-columns:1fr 1fr;gap:2em;flex:1;align-items:center}
+.idea{font-family:var(--font-t);font-weight:900;font-size:3.6em;line-height:1}
+.idea em{font-style:normal;color:var(--brasa)}
+.pills{display:flex;flex-wrap:wrap;gap:.6em;margin-top:1.4em}
+.pv{background:var(--brasa);color:#fff;border-radius:1.4em;padding:1.8em 2em;position:relative}
+.pv .q{font-family:Georgia,serif;font-size:5em;line-height:.5;position:absolute;top:.35em;left:.25em;opacity:.35}
+.pv p{font-size:1.3em;line-height:1.45;position:relative}
+.pv b{font-weight:800}
+
+/* ---------- 6 Diferenciación ---------- */
+.diff{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:1.2em}
+.diff .card{position:relative}
+.diff .main{background:var(--carbon);color:var(--crema)}
+.diff .main .muted{color:var(--muted-d)}
+.level{font-family:var(--font-t);font-weight:800;font-size:.75em;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5em;color:var(--brasa-d)}
+.diff .main .level{color:var(--brasa-l)}
+.filters{display:grid;grid-template-columns:repeat(3,1fr);gap:1em;margin-top:1.3em}
+.filter{display:flex;gap:.8em;align-items:flex-start;border:2px solid var(--crema-3);border-radius:1em;padding:1em 1.1em}
+.check{flex:none;width:1.8em;height:1.8em;border-radius:50%;background:var(--brasa);display:grid;place-items:center}
+.check svg{width:1em;height:1em}
+.check.cond{background:transparent;border:2.5px dashed var(--brasa-d)}
+.filter b{font-family:var(--font-t);font-size:1.05em;display:block;margin-bottom:.15em}
+.filter p{font-size:.88em}
+.hyp{margin-top:1em;display:flex;align-items:center;gap:.8em;font-size:.95em}
+
+/* ---------- 7 Carta ---------- */
+.menu{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1em;flex:1;min-height:0}
+.dish{background:var(--carbon-2);border:1px solid var(--carbon-3);border-radius:1.3em;padding:1.2em;display:flex;flex-direction:column;gap:.6em;position:relative}
+.dish.star{background:var(--crema);color:var(--ink);border:none}
+.dish.custom{background:var(--brasa);color:#fff;border:none}
+.dish .thumb{height:7.5em;border-radius:.9em;display:grid;place-items:center;background:rgba(255,255,255,.06)}
+.dish.star .thumb{background:var(--crema-2)}
+.dish.custom .thumb{background:rgba(0,0,0,.14)}
+.dish .thumb svg{height:85%;width:auto}
+.dish h3{font-size:1.45em}
+.dish ul{margin:0;padding-left:1.1em;font-size:.92em;line-height:1.45}
+.dish .meta{margin-top:auto;font-size:.78em;opacity:.85;border-top:1px dashed currentColor;padding-top:.6em}
+.dish .tag{position:absolute;top:1em;right:1em}
+.dish.star .tag{background:var(--carbon)}
+.dish.custom .tag{background:var(--carbon)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5em;border:none;cursor:pointer;border-radius:99px;padding:.7em 1.2em;font-family:var(--font-t);font-weight:800;font-size:.95em;background:var(--carbon);color:var(--crema);transition:transform .15s ease, background .2s}
+.btn:hover{transform:translateY(-1px)}
+.btn:focus-visible{outline:3px solid var(--brasa-l);outline-offset:3px}
+.btn.alt{background:var(--brasa);color:#fff}
+.btn.line{background:transparent;color:inherit;border:2px solid currentColor}
+
+/* ---------- 8 Demo ---------- */
+.demo{display:grid;grid-template-columns:1.6fr 1fr;gap:1.3em;flex:1;min-height:0}
+.builder{overflow:auto;padding-right:.4em;display:grid;grid-template-columns:1fr 1fr;gap:.8em;align-content:start;scrollbar-width:thin}
+.builder fieldset{border:none;margin:0;padding:.8em .9em;background:#fff;border-radius:1em;min-width:0}
+.builder fieldset.wide{grid-column:1/-1}
+.builder fieldset[disabled]{opacity:.5}
+.builder legend{font-family:var(--font-t);font-weight:900;font-size:1em;padding:0;margin-bottom:.45em;float:left;width:100%}
+.builder legend + *{clear:both}
+.builder legend .n{display:inline-grid;place-items:center;width:1.5em;height:1.5em;border-radius:50%;background:var(--brasa);color:#fff;font-size:.8em;margin-right:.35em;vertical-align:.1em}
+.hint{font-size:.75em;color:var(--muted);margin:.1em 0 .45em;clear:both}
+.opts{display:flex;flex-wrap:wrap;gap:.4em}
+.pill{position:relative;cursor:pointer}
+.pill input{position:absolute;opacity:0;width:1px;height:1px}
+.pill span{display:inline-flex;align-items:center;gap:.35em;padding:.42em .8em;border-radius:99px;border:1.5px solid var(--crema-3);background:var(--crema);font-size:.86em;line-height:1.1;transition:background .15s,border-color .15s,color .15s}
+.pill span i{width:.7em;height:.7em;border-radius:50%;display:inline-block;flex:none;border:1px solid rgba(0,0,0,.15)}
+.pill:hover span{border-color:var(--brasa)}
+.pill input:checked + span{background:var(--carbon);color:var(--crema);border-color:var(--carbon)}
+.pill input:focus-visible + span{outline:3px solid var(--brasa);outline-offset:2px}
+.pill input:disabled + span{cursor:not-allowed}
+.pill.omit span{border-style:dashed}
+.toggle{display:flex;align-items:center;gap:.7em;cursor:pointer;font-family:var(--font-t);font-weight:800}
+.toggle input{position:absolute;opacity:0;width:1px;height:1px}
+.toggle .sw{width:2.6em;height:1.45em;border-radius:99px;background:var(--crema-3);position:relative;transition:background .2s;flex:none}
+.toggle .sw::after{content:"";position:absolute;top:.18em;left:.2em;width:1.1em;height:1.1em;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.toggle input:checked + .sw{background:var(--brasa)}
+.toggle input:checked + .sw::after{transform:translateX(1.12em)}
+.toggle input:focus-visible + .sw{outline:3px solid var(--brasa);outline-offset:2px}
+
+.order{background:var(--carbon);color:var(--crema);border-radius:1.2em;padding:1.1em 1.2em;display:flex;flex-direction:column;gap:.7em;min-height:0}
+.order-head{display:flex;justify-content:space-between;align-items:center}
+.order-head h3{margin:0;font-size:1.3em}
+.stack-wrap{height:9em;display:flex;align-items:flex-end;justify-content:center;background:radial-gradient(ellipse at 50% 100%, rgba(232,87,30,.35), transparent 70%);border-radius:.8em;padding-bottom:.6em}
+.stack{display:flex;flex-direction:column;align-items:center;width:11em}
+.layer{width:100%;animation:drop .35s ease both}
+@keyframes drop{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.l-top{height:2.6em;border-radius:50% 50% .35em .35em / 100% 100% .35em .35em;position:relative}
+.l-top::after{content:"";position:absolute;inset:.6em 30% auto 22%;height:.3em;border-radius:99px;background:rgba(255,255,255,.35)}
+.l-bot{height:1.3em;border-radius:.3em .3em 1em 1em}
+.l-pat{height:1.05em;border-radius:.6em;width:104%}
+.l-chs{height:.38em;width:102%;border-radius:.1em}
+.l-veg{height:.42em;border-radius:99px;width:106%}
+.l-sauce{height:.3em;border-radius:99px;width:96%}
+.l-ext{height:.5em;border-radius:.3em;width:100%}
+.l-leaf{height:1.1em;border-radius:50% 50% 40% 40%;width:108%}
+.summary{margin:0;display:grid;grid-template-columns:auto 1fr;gap:.32em .9em;font-size:.86em;overflow:auto;min-height:0}
+.summary dt{color:var(--muted-d);font-weight:600}
+.summary dd{margin:0;font-weight:600}
+.summary dd.omit{color:var(--brasa-l);font-weight:500;font-style:italic}
+.nutri{display:grid;grid-template-columns:1fr 1fr;gap:.5em}
+.nutri div{background:var(--carbon-2);border:1px solid var(--carbon-3);border-radius:.7em;padding:.5em .65em}
+.nutri small{display:block;color:var(--muted-d);font-size:.7em;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.nutri b{font-family:var(--font-t);font-size:.95em}
+.order-actions{display:flex;gap:.5em;flex-wrap:wrap}
+.order-actions .btn{font-size:.82em;padding:.6em 1em}
+.order .btn.line{color:var(--crema)}
+.status{font-size:.8em;min-height:1.2em;color:var(--brasa-l)}
+
+/* ---------- 9 Identidad ---------- */
+.id{display:grid;grid-template-columns:1fr 1.5fr;gap:1.6em;flex:1;min-height:0}
+.id-left{display:flex;flex-direction:column;gap:1em}
+.iso-box{display:flex;gap:1.2em;align-items:center;background:#fff;border-radius:1.2em;padding:1em 1.2em}
+.iso-box svg{width:6em;height:6em;flex:none}
+.wordmark{font-family:var(--font-t);font-weight:900;font-size:2em;line-height:1}
+.swatches{display:grid;grid-template-columns:repeat(3,1fr);gap:.7em}
+.sw-c{border-radius:1em;padding:2.4em .8em .7em;font-size:.8em;font-weight:700;border:1px solid rgba(0,0,0,.08)}
+.sw-c b{display:block;font-family:var(--font-t);font-size:1.15em}
+.chips{display:flex;flex-wrap:wrap;gap:.45em}
+.chip{padding:.45em .9em;border-radius:99px;background:var(--carbon);color:var(--crema);font-family:var(--font-t);font-weight:800;font-size:.85em}
+.apps{display:grid;grid-template-columns:repeat(3,1fr);gap:1em}
+.app-card{background:#fff;border-radius:1.2em;padding:.8em;display:flex;flex-direction:column;gap:.5em}
+.app-card svg{width:100%;height:auto;border-radius:.7em;display:block}
+.app-card b{font-family:var(--font-t)}
+.type-sample{background:var(--carbon);color:var(--crema);border-radius:1.2em;padding:1em 1.3em;display:flex;justify-content:space-between;align-items:center;gap:1em}
+.type-sample .big{font-family:var(--font-t);font-weight:900;font-size:2.2em;line-height:1}
+
+/* ---------- 10 Franquicia ---------- */
+.fr{display:grid;grid-template-columns:1.45fr 1fr;gap:2em;flex:1;min-height:0;align-items:center}
+.road{display:grid;grid-template-columns:repeat(5,1fr);gap:.8em;margin-top:.4em}
+.step{background:var(--carbon-2);border:1px solid var(--carbon-3);border-radius:1.1em;padding:1em;position:relative}
+.step .num{font-family:var(--font-t);font-weight:900;font-size:1.9em;color:var(--brasa)}
+.step b{display:block;font-family:var(--font-t);font-size:1.05em;margin:.2em 0 .3em}
+.step p{font-size:.82em;color:var(--muted-d)}
+.phases{display:flex;align-items:center;gap:.6em;margin-top:1.6em;flex-wrap:wrap}
+.phase{padding:.55em 1em;border-radius:99px;border:2px solid var(--brasa);font-family:var(--font-t);font-weight:800;font-size:.9em}
+.phase.on{background:var(--brasa);color:#fff}
+.arrow{color:var(--brasa);font-weight:900}
+.closing{text-align:center;display:flex;flex-direction:column;align-items:center;gap:.6em}
+.closing svg{width:11em;height:11em;filter:drop-shadow(0 .8em 1.5em rgba(232,87,30,.35))}
+.closing .wordmark{font-size:3.6em}
+.closing .slogan{font-size:2em;color:var(--brasa)}
+
+/* ---------- Controles ---------- */
+.controls{display:flex;align-items:center;gap:8px;color:var(--crema);font-family:var(--font-t)}
+.cbtn{display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 16px;border-radius:99px;border:1px solid #3A3633;background:#1C1A19;color:var(--crema);cursor:pointer;font-weight:800;font-size:15px}
+.cbtn:hover:not(:disabled){background:#2A2725;border-color:var(--brasa)}
+.cbtn:disabled{opacity:.35;cursor:default}
+.cbtn:focus-visible{outline:3px solid var(--brasa);outline-offset:2px}
+.cbtn svg{width:18px;height:18px}
+.cbtn.next{background:var(--brasa);border-color:var(--brasa);color:#fff}
+.cbtn.next:hover:not(:disabled){background:#d14a14}
+.counter{min-width:70px;text-align:center;font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
+
+/* ---------- Celular / vertical ---------- */
+@media (max-width: 820px), (max-aspect-ratio: 1/1) and (max-width: 1100px){
+  .app{padding:0;gap:0;justify-content:flex-start}
+  .deck{width:100%;aspect-ratio:auto;flex:1;border-radius:0;container-type:normal}
+  .slide{font-size:15px;padding:1.6rem 1.15rem 2rem;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  h2{font-size:2em}
+  .lead{font-size:1.1em}
+  .cover,.seg,.comp,.pos,.demo,.id,.fr{grid-template-columns:1fr;gap:1.2em;flex:none}
+  .cover{height:auto}
+  .cover h1{font-size:3.4em}
+  .slogan{font-size:1.4em}
+  .cover .hero{max-width:340px;margin:0 auto}
+  .scene,.grid3,.grid4,.diff,.filters,.menu,.apps,.road{grid-template-columns:1fr}
+  .grid2{grid-template-columns:1fr}
+  .beat:not(:last-child)::after{display:none}
+  .quote-line{font-size:1.25em}
+  .idea{font-size:2.3em}
+  .map{height:auto}
+  .map svg{height:auto}
+  .builder{grid-template-columns:1fr;overflow:visible}
+  .order{position:relative}
+  .menu{flex:none}
+  .dish .thumb{height:6em}
+  .apps{grid-template-columns:repeat(3,1fr);gap:.5em}
+  .app-card{padding:.4em}
+  .app-card b{font-size:.8em}
+  .road{grid-template-columns:1fr 1fr}
+  .closing .wordmark{font-size:2.4em}
+  .closing svg{width:7em;height:7em}
+  .controls{width:100%;justify-content:space-between;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:#0E0D0C;border-top:1px solid #2A2725}
+  .cbtn .lbl{display:none}
+  .cbtn{padding:0 14px}
+}
+</style>
+</head>
+<body>
+
+<!-- Símbolos SVG reutilizables -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="iso" viewBox="0 0 100 100">
+      <path style="fill:var(--iso-a,#E8571E)" d="M10 47C10 24 29 9 50 9s40 15 40 38z"/>
+      <path style="fill:var(--iso-c,#F6EBD9)" d="M50 15c6 8 13 12 11 22-1 6-5 8-11 8s-11-3-11-9c0-5 4-8 5-13 2 4 3 6 6 6 2-4 1-9 0-14z"/>
+      <rect style="fill:var(--iso-b,#1C1A19)" x="7" y="53" width="86" height="13" rx="6.5"/>
+      <path style="fill:var(--iso-a,#E8571E)" d="M11 72h78c0 11-8 18-19 18H30c-11 0-19-7-19-18z"/>
+    </symbol>
+    <symbol id="burger-mini" viewBox="0 0 120 100">
+      <path fill="#D98A35" d="M14 44C14 20 36 8 60 8s46 12 46 36z"/>
+      <ellipse cx="44" cy="22" rx="3" ry="1.6" fill="#F6EBD9"/><ellipse cx="62" cy="17" rx="3" ry="1.6" fill="#F6EBD9"/><ellipse cx="78" cy="25" rx="3" ry="1.6" fill="#F6EBD9"/>
+      <path fill="#6BA539" d="M10 46q8 8 16 1t16 1 16-1 16 1 16-1 16 1 14 0v3H10z"/>
+      <rect x="12" y="52" width="96" height="16" rx="8" fill="#4A2A1A"/>
+      <path fill="#B6467A" d="M16 70h88v3H16z"/>
+      <path fill="#D98A35" d="M14 75h92c0 9-7 15-16 15H30c-9 0-16-6-16-15z"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<main class="app" id="app">
+  <section class="deck" id="deck" aria-roledescription="presentación" aria-label="Barrio Brasa">
+    <div class="progress" id="progress" style="width:10%"></div>
+
+    <!-- 1. PORTADA -->
+    <article class="slide dark active" aria-label="Diapositiva 1: Portada">
+      <div class="cover">
+        <div>
+          <div class="brandline rv" style="--d:0">
+            <svg aria-hidden="true"><use href="#iso"/></svg>
+            <span class="tag ghost">Posicionamiento y diferenciación</span>
+          </div>
+          <h1 class="rv" style="--d:1">Barrio<span>Brasa</span></h1>
+          <p class="slogan rv" style="--d:2">Tu ritmo, tu brasa.</p>
+          <p class="lead muted rv" style="--d:3;margin-top:1em">Hamburguesas a la parrilla con sabores peruanos, para armar a tu gusto después de entrenar.</p>
+          <p class="small muted rv" style="--d:4;margin-top:1.6em">Propuesta académica · Lima · Concepto con potencial de franquicia</p>
+        </div>
+        <div class="hero rv" style="--d:2">
+          <svg viewBox="0 0 400 340" role="img" aria-label="Ilustración de La Anticuchera, la hamburguesa estrella">
+            <defs>
+              <linearGradient id="bun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F0A54A"/><stop offset="1" stop-color="#C9711F"/></linearGradient>
+              <linearGradient id="fl" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#E8571E"/><stop offset="1" stop-color="#FFC24A"/></linearGradient>
+            </defs>
+            <g opacity=".9">
+              <path fill="url(#fl)" d="M70 300c-10-30 10-45 5-70 20 15 25 35 20 55 8-6 12-14 12-24 15 18 12 32 3 39z"/>
+              <path fill="url(#fl)" d="M300 300c-6-28 12-40 10-62 18 16 20 34 14 50 7-5 11-12 12-20 12 16 8 28-2 32z"/>
+            </g>
+            <ellipse cx="200" cy="300" rx="150" ry="16" fill="#000" opacity=".35"/>
+            <path fill="url(#bun)" d="M60 152C60 74 130 40 200 40s140 34 140 112z"/>
+            <path fill="#fff" opacity=".18" d="M110 90c25-30 70-38 100-36-40 8-70 20-90 46z"/>
+            <g fill="#F6EBD9">
+              <ellipse cx="150" cy="80" rx="7" ry="3.5" transform="rotate(-20 150 80)"/><ellipse cx="200" cy="66" rx="7" ry="3.5"/><ellipse cx="250" cy="82" rx="7" ry="3.5" transform="rotate(20 250 82)"/>
+              <ellipse cx="120" cy="115" rx="7" ry="3.5" transform="rotate(-30 120 115)"/><ellipse cx="180" cy="100" rx="7" ry="3.5"/><ellipse cx="228" cy="110" rx="7" ry="3.5" transform="rotate(15 228 110)"/><ellipse cx="285" cy="118" rx="7" ry="3.5" transform="rotate(30 285 118)"/>
+            </g>
+            <path fill="#9E2B1E" d="M58 154h284c0 8-6 10-14 10-10 0-12 8-22 8s-12-8-24-8-14 10-26 10-14-10-26-10-14 8-26 8-12-8-24-8-12 10-24 10-14-10-26-10-12 6-22 6-20-4-30-16z"/>
+            <rect x="52" y="168" width="296" height="50" rx="25" fill="#3E2216"/>
+            <g stroke="#1C1A19" stroke-width="5" stroke-linecap="round" opacity=".55"><path d="M100 180l20 26M150 180l20 26M200 180l20 26M250 180l20 26M300 180l14 18"/></g>
+            <path fill="none" stroke="#C84A86" stroke-width="7" stroke-linecap="round" d="M70 224q15-8 30 0t30 0 30 0 30 0 30 0 30 0 30 0 30 0 30 0"/>
+            <path fill="url(#bun)" d="M62 234h276c0 34-28 54-58 54H120c-30 0-58-20-58-54z"/>
+          </svg>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2. OCASIÓN -->
+    <article class="slide light" aria-label="Diapositiva 2: La ocasión de consumo">
+      <p class="kicker rv">02 · La ocasión de consumo</p>
+      <h2 class="rv" style="--d:1">Terminas de entrenar. <span class="hl">Tienes hambre.</span></h2>
+      <div class="scene">
+        <div class="beat rv" style="--d:2">
+          <svg class="big-ico" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="36" r="22" fill="#F6EBD9" stroke="#1C1A19" stroke-width="4"/><path d="M32 36V24M26 8h12M32 8v6" stroke="#1C1A19" stroke-width="4" stroke-linecap="round"/><path d="M32 36l9 6" stroke="#E8571E" stroke-width="4" stroke-linecap="round"/></svg>
+          <div class="time">7:40 p. m.</div>
+          <p>Ale sale de la cancha después de la pichanga con sus amigos.</p>
+        </div>
+        <div class="beat rv" style="--d:3">
+          <svg class="big-ico" viewBox="0 0 64 64" aria-hidden="true"><g stroke="#1C1A19" stroke-width="4" stroke-linecap="round"><path d="M10 18h44M10 32h44M10 46h44"/></g><circle cx="22" cy="18" r="6" fill="#E8571E"/><circle cx="42" cy="32" r="6" fill="#E8571E"/><circle cx="28" cy="46" r="6" fill="#E8571E"/></svg>
+          <div class="time">¿Qué como?</div>
+          <p>Quiere algo rico y práctico, pero decidir él mismo qué lleva y cuánto.</p>
+        </div>
+        <div class="beat rv" style="--d:4">
+          <svg class="big-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#iso"/></svg>
+          <div class="time">Arma tu Brasa</div>
+          <p>Pasa por Barrio Brasa, elige paso a paso y recoge su pedido en el mostrador.</p>
+        </div>
+      </div>
+      <p class="quote-line rv" style="--d:5">Cuando terminas, <span class="hl">tú decides qué va en tu hamburguesa.</span></p>
+    </article>
+
+    <!-- 3. SEGMENTACIÓN -->
+    <article class="slide light" aria-label="Diapositiva 3: Segmentación">
+      <p class="kicker rv">03 · Segmentación</p>
+      <h2 class="rv" style="--d:1">¿A quién le hablamos?</h2>
+      <div class="seg">
+        <div class="grid2">
+          <div class="card rv" style="--d:2">
+            <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-7 7-12a7 7 0 10-14 0c0 5 7 12 7 12z" fill="#E8571E"/><circle cx="12" cy="10" r="2.6" fill="#fff"/></svg></div>
+            <h3>Geográfica</h3>
+            <p>Personas que viven, estudian, trabajan o entrenan cerca del local.</p>
+          </div>
+          <div class="card rv" style="--d:3">
+            <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5" fill="#1C1A19"/><circle cx="17" cy="9" r="2.8" fill="#E8571E"/><path d="M2 20c0-4 3-7 7-7s7 3 7 7zM14 20c0-3 1.5-5 3-5.6 3 .4 5 2.6 5 5.6z" fill="#1C1A19"/></svg></div>
+            <h3>Demográfica</h3>
+            <p>Estudiantes y jóvenes trabajadores de <b>18 a 30 años</b>.</p>
+            <p class="small muted" style="margin-top:.4em">Rango como hipótesis inicial.</p>
+          </div>
+          <div class="card rv" style="--d:4">
+            <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21l-8-8a5 5 0 017-7l1 1 1-1a5 5 0 017 7z" fill="#E8571E"/></svg></div>
+            <h3>Psicográfica</h3>
+            <p>Estilo de vida activo; valoran el sabor y poder decidir qué lleva su comida.</p>
+          </div>
+          <div class="card rv" style="--d:5">
+            <div class="ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#1C1A19" stroke-width="2.2"/><path d="M12 3v18M3 12h18M5.5 6c3 2 3 10 0 12M18.5 6c-3 2-3 10 0 12" stroke="#1C1A19" stroke-width="1.6" fill="none"/></svg></div>
+            <h3>Conductual</h3>
+            <p>Van al gimnasio, corren o hacen deporte recreativo y buscan una comida práctica al terminar.</p>
+          </div>
+        </div>
+        <div class="persona rv" style="--d:4">
+          <span class="tag">Público prioritario</span>
+          <h3>Quien entrena con regularidad</h3>
+          <p>…y quiere una hamburguesa que pueda ajustar a su apetito y a sus gustos.</p>
+          <ul>
+            <li>Entrena varias veces por semana cerca del local.</li>
+            <li>Al terminar, busca algo rico, rápido y para recoger.</li>
+            <li>Quiere elegir porción, ingredientes y acompañamiento.</li>
+          </ul>
+        </div>
+      </div>
+    </article>
+
+    <!-- 4. COMPETENCIA -->
+    <article class="slide light" aria-label="Diapositiva 4: Competencia y oportunidad">
+      <p class="kicker rv">04 · Competencia y oportunidad</p>
+      <h2 class="rv" style="--d:1">Un espacio poco ocupado</h2>
+      <div class="comp">
+        <div class="map rv" style="--d:2">
+          <svg viewBox="0 0 640 400" role="img" aria-label="Mapa de posicionamiento: precio del combo frente a grado de personalización. Barrio Brasa se ubica en precio medio y personalización alta.">
+            <rect x="80" y="20" width="540" height="320" fill="#FBF5EC" rx="10"/>
+            <line x1="350" y1="20" x2="350" y2="340" stroke="#E2CBA8" stroke-dasharray="6 6"/>
+            <line x1="80" y1="180" x2="620" y2="180" stroke="#E2CBA8" stroke-dasharray="6 6"/>
+            <line x1="80" y1="340" x2="625" y2="340" stroke="#1C1A19" stroke-width="2.5"/>
+            <line x1="80" y1="340" x2="80" y2="15" stroke="#1C1A19" stroke-width="2.5"/>
+            <path d="M625 334l10 6-10 6zM74 15l6-10 6 10z" fill="#1C1A19"/>
+            <text x="350" y="372" text-anchor="middle" font-size="17" font-weight="700" fill="#1C1A19">Grado de personalización →</text>
+            <text x="90" y="392" font-size="13" fill="#5E544C">Baja</text><text x="612" y="392" text-anchor="end" font-size="13" fill="#5E544C">Alta</text>
+            <text transform="translate(34 180) rotate(-90)" text-anchor="middle" font-size="17" font-weight="700" fill="#1C1A19">Precio del combo →</text>
+            <text x="62" y="334" text-anchor="end" font-size="13" fill="#5E544C">Bajo</text><text x="62" y="32" text-anchor="end" font-size="13" fill="#5E544C">Alto</text>
+            <g font-size="14" fill="#1C1A19">
+              <circle cx="165" cy="275" r="11" fill="#3A3633"/><text x="182" y="280">A · Cadena de comida rápida</text>
+              <circle cx="235" cy="70" r="11" fill="#3A3633"/><text x="252" y="75">B · Hamburguesería gourmet</text>
+              <circle cx="150" cy="312" r="11" fill="#3A3633"/><text x="167" y="317">C · Sanguchería de barrio</text>
+              <circle cx="300" cy="190" r="11" fill="#3A3633"/><text x="317" y="195">D · Smash / food truck</text>
+              <circle cx="490" cy="105" r="11" fill="#3A3633"/><text x="440" y="80">E · Bowls armables</text>
+            </g>
+            <g>
+              <circle cx="520" cy="190" r="34" fill="#E8571E" opacity=".14"/>
+              <circle cx="520" cy="190" r="26" fill="none" stroke="#E8571E" stroke-width="2.5" stroke-dasharray="5 4"/>
+              <use href="#iso" x="504" y="174" width="32" height="32"/>
+              <text x="520" y="245" text-anchor="middle" font-size="16" font-weight="800" fill="#B23A0A">Barrio Brasa</text>
+              <text x="520" y="263" text-anchor="middle" font-size="12" fill="#B23A0A">posición deseada</text>
+            </g>
+          </svg>
+        </div>
+        <div class="side">
+          <div class="rv" style="--d:3">
+            <h3>La oportunidad</h3>
+            <p>Las opciones de hamburguesa suelen ofrecer recetas cerradas. Barrio Brasa busca un <b>precio medio</b> con <b>personalización alta</b>.</p>
+          </div>
+          <div class="legend rv" style="--d:4">
+            <span><i class="dot"></i> Perfil de competidor (ilustrativo)</span>
+            <span><i class="dot bb"></i> Barrio Brasa: posición deseada</span>
+          </div>
+          <p class="note rv" style="--d:5">Cinco perfiles ilustrativos, no marcas reales. Sus posiciones requieren validación con visitas y precios de la zona del piloto.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 5. POSICIONAMIENTO -->
+    <article class="slide dark" aria-label="Diapositiva 5: Posicionamiento y propuesta de valor">
+      <p class="kicker rv">05 · Posicionamiento y propuesta de valor</p>
+      <div class="pos">
+        <div>
+          <p class="small muted rv" style="--d:1;margin-bottom:.6em">La idea que queremos que recuerden</p>
+          <p class="idea rv" style="--d:2">En Barrio Brasa, <em>la hamburguesa la armas tú.</em></p>
+          <div class="pills rv" style="--d:3">
+            <span class="tag">Por atributo / beneficio</span>
+            <span class="tag ghost">Libertad de personalizar</span>
+            <span class="tag ghost">Ocasión: después de entrenar</span>
+          </div>
+          <p class="muted rv" style="--d:4;margin-top:1.2em">La ocasión de consumo ayuda a saber <b style="color:var(--crema)">cuándo</b> elegirnos; el atributo explica <b style="color:var(--crema)">por qué</b>.</p>
+        </div>
+        <div class="pv rv" style="--d:3">
+          <span class="q" aria-hidden="true">“</span>
+          <p>Para <b>personas que van al gimnasio o practican deportes recreativos</b>, Barrio Brasa es una <b>hamburguesería a la parrilla</b> que les permite <b>armar una comida a su gusto después de entrenar</b>, porque pueden elegir la porción, los ingredientes y los acompañamientos de una carta inspirada en sabores peruanos.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 6. DIFERENCIACIÓN -->
+    <article class="slide light" aria-label="Diapositiva 6: Tipos de diferenciación">
+      <p class="kicker rv">06 · Tipos de diferenciación</p>
+      <h2 class="rv" style="--d:1">Tres niveles, un atributo central</h2>
+      <div class="diff">
+        <div class="card main rv" style="--d:2">
+          <p class="level">Principal · Producto</p>
+          <h3>Arma tu Brasa</h3>
+          <p>Eliges cada componente desde cero y puedes omitir cualquier ingrediente de la carta.</p>
+          <p class="small muted" style="margin-top:.6em">La carta mostrará el aporte de proteína por opción y porción cuando se calcule con las recetas definitivas.</p>
+        </div>
+        <div class="card rv" style="--d:3">
+          <p class="level">Complementaria · Servicio</p>
+          <h3>Pedido paso a paso</h3>
+          <p>Revisas tu combinación antes de confirmarla. En combo, también eliges el acompañamiento.</p>
+        </div>
+        <div class="card rv" style="--d:4">
+          <p class="level">Complementaria · Imagen</p>
+          <h3>Parrilla y barrio</h3>
+          <p>La parrilla, los nombres de las recetas y la identidad gráfica conectan con los sabores peruanos.</p>
+        </div>
+      </div>
+      <div class="filters">
+        <div class="filter rv" style="--d:5"><span class="check"><svg><use href="#i-check"/></svg></span><div><b>Relevante</b><p>Permite ajustar el pedido al apetito y al gusto.</p></div></div>
+        <div class="filter rv" style="--d:6"><span class="check cond" aria-hidden="true"></span><div><b>Diferenciador <span class="small muted">(si se confirma)</span></b><p>Siempre que los competidores de la zona den menos libertad para armar.</p></div></div>
+        <div class="filter rv" style="--d:7"><span class="check"><svg><use href="#i-check"/></svg></span><div><b>Comunicable</b><p>Se demuestra con el menú y con un pedido armado en vivo.</p></div></div>
+      </div>
+      <p class="hyp rv" style="--d:8"><span class="tag">Hipótesis</span> La ventaja competitiva debe validarse con observación de la competencia y prueba con clientes.</p>
+    </article>
+
+    <!-- 7. CARTA -->
+    <article class="slide dark" aria-label="Diapositiva 7: Carta de la marca">
+      <p class="kicker rv">07 · Carta de la marca</p>
+      <h2 class="rv" style="--d:1">Tres de la casa + una tuya</h2>
+      <div class="menu">
+        <div class="dish star rv" style="--d:2">
+          <span class="tag">Estrella</span>
+          <div class="thumb"><svg viewBox="0 0 120 100" aria-hidden="true"><use href="#burger-mini"/></svg></div>
+          <h3>La Anticuchera</h3>
+          <ul><li>Carne a la parrilla</li><li>Salsa de ají panca</li><li>Cebolla encurtida</li></ul>
+          <button class="btn alt" type="button" id="tryAnticuchera">Ajústala en la demo →</button>
+          <p class="meta">Receta definida · Proteína: por calcular según receta</p>
+        </div>
+        <div class="dish rv" style="--d:3">
+          <div class="thumb"><svg viewBox="0 0 120 100" aria-hidden="true" style="filter:hue-rotate(40deg) saturate(.9)"><use href="#burger-mini"/></svg></div>
+          <h3>La Huacatay</h3>
+          <p class="small muted">Inspirada en el huacatay, hierba aromática de la cocina peruana.</p>
+          <p class="meta">Nombre provisional · Receta en desarrollo</p>
+        </div>
+        <div class="dish rv" style="--d:4">
+          <div class="thumb"><svg viewBox="0 0 120 100" aria-hidden="true" style="filter:hue-rotate(-15deg) saturate(1.2)"><use href="#burger-mini"/></svg></div>
+          <h3>La Criolla</h3>
+          <p class="small muted">Inspirada en la sazón criolla limeña.</p>
+          <p class="meta">Nombre provisional · Receta en desarrollo</p>
+        </div>
+        <div class="dish custom rv" style="--d:5">
+          <span class="tag">Personalizable</span>
+          <div class="thumb"><svg viewBox="0 0 100 100" aria-hidden="true" style="--iso-a:#fff;--iso-c:#E8571E"><use href="#iso"/></svg></div>
+          <h3>Arma tu Brasa</h3>
+          <ul><li>Pan, proteína y porción</li><li>Queso, vegetales y salsa</li><li>Extras y combo</li></ul>
+          <p class="meta">Todo opcional · Desde cero</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 8. DEMO -->
+    <article class="slide light" aria-label="Diapositiva 8: Demostración Arma tu Brasa">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:1em;flex-wrap:wrap">
+        <div>
+          <p class="kicker">08 · Demostración</p>
+          <h2 style="font-size:2.3em;margin-bottom:.35em">Arma tu Brasa, en vivo</h2>
+        </div>
+        <p class="note muted" style="margin-bottom:.8em">Opciones de menú ilustrativas para la demostración.</p>
+      </div>
+      <div class="demo">
+        <form class="builder" id="builder" aria-label="Selector Arma tu Brasa" onsubmit="return false"></form>
+        <aside class="order" aria-label="Resumen del pedido">
+          <div class="order-head"><h3>Tu pedido</h3><span class="tag" id="comboTag" hidden>Combo</span></div>
+          <div class="stack-wrap" aria-hidden="true"><div class="stack" id="stack"></div></div>
+          <dl class="summary" id="summary" aria-live="polite"></dl>
+          <div class="nutri">
+            <div><small>Peso de la porción</small><b id="weight">120 g aprox.</b></div>
+            <div><small>Aporte de proteína</small><b id="protein">Por calcular según receta</b></div>
+          </div>
+          <p class="small" style="color:var(--muted-d);font-size:.7em;margin-top:-.2em">El peso es de la porción de proteína (ilustrativo); no equivale a su aporte nutricional.</p>
+          <div class="order-actions">
+            <button class="btn alt" type="button" id="confirm">Revisar y confirmar</button>
+            <button class="btn line" type="button" id="reset">Empezar de nuevo</button>
+          </div>
+          <p class="status" id="status" role="status"></p>
+        </aside>
+      </div>
+    </article>
+
+    <!-- 9. IDENTIDAD -->
+    <article class="slide light" aria-label="Diapositiva 9: Brief e identidad visual">
+      <p class="kicker rv">09 · Brief e identidad visual</p>
+      <h2 class="rv" style="--d:1;font-size:2.5em">Cercana, enérgica, creativa y auténtica</h2>
+      <div class="id">
+        <div class="id-left">
+          <div class="iso-box rv" style="--d:2">
+            <svg aria-label="Isotipo: llama dentro de la silueta de una hamburguesa" role="img"><use href="#iso"/></svg>
+            <div><div class="wordmark">Barrio Brasa</div><p class="hl" style="font-family:var(--font-t);font-weight:800;margin-top:.3em">Tu ritmo, tu brasa.</p><p class="small muted" style="margin-top:.4em">Isotipo: una llama dentro de la silueta de una hamburguesa.</p></div>
+          </div>
+          <div class="swatches rv" style="--d:3">
+            <div class="sw-c" style="background:#E8571E;color:#fff"><b>Naranja brasa</b>#E8571E</div>
+            <div class="sw-c" style="background:#1C1A19;color:#F6EBD9"><b>Negro carbón</b>#1C1A19</div>
+            <div class="sw-c" style="background:#F6EBD9;color:#1C1A19"><b>Crema</b>#F6EBD9</div>
+          </div>
+          <div class="chips rv" style="--d:4"><span class="chip">Cercana</span><span class="chip">Enérgica</span><span class="chip">Creativa</span><span class="chip">Auténtica</span></div>
+          <p class="small muted rv" style="--d:5"><b style="color:var(--ink)">Tono:</b> directo y amistoso. Hablamos de sabor, elección y disfrute; sin promesas de salud ni rendimiento.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:1em;min-height:0">
+          <div class="apps">
+            <div class="app-card rv" style="--d:3">
+              <svg viewBox="0 0 200 160" role="img" aria-label="Aplicación en menú">
+                <rect width="200" height="160" fill="#1C1A19"/>
+                <rect width="200" height="34" fill="#E8571E"/>
+                <use href="#iso" x="10" y="5" width="24" height="24" style="--iso-a:#fff;--iso-c:#E8571E"/>
+                <text x="40" y="23" font-family="Arial Rounded MT Bold, Arial" font-weight="900" font-size="14" fill="#fff">CARTA</text>
+                <g font-family="Arial" font-size="10" fill="#F6EBD9">
+                  <text x="14" y="58">La Anticuchera</text><text x="14" y="80">La Huacatay</text><text x="14" y="102">La Criolla</text>
+                  <text x="14" y="128" fill="#FF8A4C" font-weight="700">Arma tu Brasa</text>
+                </g>
+                <g stroke="#3A3633"><path d="M100 55h86M100 77h86M100 99h86M100 125h86" stroke-dasharray="2 3"/></g>
+              </svg>
+              <b>Menú</b>
+            </div>
+            <div class="app-card rv" style="--d:4">
+              <svg viewBox="0 0 200 160" role="img" aria-label="Aplicación en empaque">
+                <rect width="200" height="160" fill="#EDDCC1"/>
+                <path d="M40 60l60-26 60 26v70l-60 22-60-22z" fill="#F6EBD9" stroke="#1C1A19" stroke-width="2"/>
+                <path d="M40 60l60 22 60-22M100 82v70" fill="none" stroke="#1C1A19" stroke-width="2"/>
+                <path d="M40 92l60 22 60-22v14l-60 22-60-22z" fill="#E8571E"/>
+                <use href="#iso" x="56" y="66" width="28" height="28" transform="skewY(20) translate(0 -20)"/>
+                <text x="116" y="74" font-family="Arial Rounded MT Bold, Arial" font-weight="900" font-size="10" fill="#1C1A19" transform="skewY(-20) translate(0 42)">BRASA</text>
+              </svg>
+              <b>Empaque</b>
+            </div>
+            <div class="app-card rv" style="--d:5">
+              <svg viewBox="0 0 200 160" role="img" aria-label="Aplicación en letrero">
+                <rect width="200" height="160" fill="#6E8BA3"/>
+                <rect y="118" width="200" height="42" fill="#3A3633"/>
+                <rect x="20" y="40" width="160" height="60" rx="10" fill="#1C1A19"/>
+                <use href="#iso" x="30" y="50" width="40" height="40"/>
+                <text x="76" y="68" font-family="Arial Rounded MT Bold, Arial" font-weight="900" font-size="15" fill="#F6EBD9">Barrio</text>
+                <text x="76" y="86" font-family="Arial Rounded MT Bold, Arial" font-weight="900" font-size="15" fill="#E8571E">Brasa</text>
+                <path d="M60 40V20M140 40V20" stroke="#1C1A19" stroke-width="3"/>
+                <rect x="40" y="106" width="120" height="12" fill="#E8571E"/>
+              </svg>
+              <b>Letrero</b>
+            </div>
+          </div>
+          <div class="type-sample rv" style="--d:6">
+            <span class="big">Aa Brasa</span>
+            <span class="small" style="color:var(--muted-d);text-align:right">Títulos: tipografía gruesa y redondeada<br>Textos: sans serif limpia y legible</span>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- 10. FRANQUICIA -->
+    <article class="slide dark" aria-label="Diapositiva 10: Del local piloto a la franquicia">
+      <p class="kicker rv">10 · Del local piloto a la franquicia</p>
+      <div class="fr">
+        <div>
+          <h2 class="rv" style="--d:1">Una experiencia que se puede replicar</h2>
+          <div class="road">
+            <div class="step rv" style="--d:2"><span class="num">01</span><b>Recetas</b><p>Fichas estandarizadas para cada hamburguesa y salsa.</p></div>
+            <div class="step rv" style="--d:3"><span class="num">02</span><b>Porciones</b><p>Gramajes fijos y utensilios de medida.</p></div>
+            <div class="step rv" style="--d:4"><span class="num">03</span><b>Insumos</b><p>Proveedores homologados y especificaciones.</p></div>
+            <div class="step rv" style="--d:5"><span class="num">04</span><b>Capacitación</b><p>Parrilla, armado paso a paso y atención.</p></div>
+            <div class="step rv" style="--d:6"><span class="num">05</span><b>Manual</b><p>Atención e imagen: guion, uniformes, local.</p></div>
+          </div>
+          <div class="phases rv" style="--d:7">
+            <span class="phase on">Local piloto en Lima</span><span class="arrow">→</span>
+            <span class="phase">Validar y ajustar</span><span class="arrow">→</span>
+            <span class="phase">Documentar</span><span class="arrow">→</span>
+            <span class="phase">Franquiciar</span>
+          </div>
+        </div>
+        <div class="closing rv" style="--d:4">
+          <svg aria-hidden="true"><use href="#iso"/></svg>
+          <div class="wordmark">Barrio Brasa</div>
+          <p class="slogan">Tu ritmo, tu brasa.</p>
+          <p class="small muted">Gracias</p>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <nav class="controls" aria-label="Navegación de diapositivas">
+    <button class="cbtn" id="prev" type="button" aria-label="Diapositiva anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl">Anterior</span></button>
+    <span class="counter" id="counter" aria-live="polite">1 / 10</span>
+    <button class="cbtn next" id="next" type="button" aria-label="Diapositiva siguiente"><span class="lbl">Siguiente</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="cbtn" id="fs" type="button" aria-label="Pantalla completa" title="Pantalla completa (F)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span class="lbl">Pantalla completa</span></button>
+  </nav>
+</main>
+
+<script>
+(function(){
+  /* ---------- Navegación ---------- */
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var cur = 0;
+  var prev = document.getElementById('prev'), next = document.getElementById('next');
+  var counter = document.getElementById('counter'), progress = document.getElementById('progress');
+
+  function go(i){
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach(function(s, k){
+      var on = k === i;
+      s.classList.toggle('active', on);
+      s.setAttribute('aria-hidden', on ? 'false' : 'true');
+      if ('inert' in s) s.inert = !on;
+    });
+    cur = i;
+    counter.textContent = (i + 1) + ' / ' + slides.length;
+    prev.disabled = i === 0;
+    next.disabled = i === slides.length - 1;
+    progress.style.width = ((i + 1) / slides.length * 100) + '%';
+    slides[i].scrollTop = 0;
+    try { history.replaceState(null, '', '#' + (i + 1)); } catch(e){}
+  }
+  prev.addEventListener('click', function(){ go(cur - 1); });
+  next.addEventListener('click', function(){ go(cur + 1); });
+
+  document.addEventListener('keydown', function(e){
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    var t = e.target;
+    // Las flechas dentro del selector o de cualquier campo no cambian de diapositiva
+    if (t && t.closest && t.closest('input, select, textarea, [contenteditable="true"], .builder')) return;
+    switch (e.key){
+      case 'ArrowRight': case 'PageDown': e.preventDefault(); go(cur + 1); break;
+      case 'ArrowLeft': case 'PageUp': e.preventDefault(); go(cur - 1); break;
+      case 'Home': e.preventDefault(); go(0); break;
+      case 'End': e.preventDefault(); go(slides.length - 1); break;
+      case 'f': case 'F': toggleFs(); break;
+    }
+  });
+
+  // Deslizar en pantallas táctiles
+  var sx = null, sy = null;
+  var deck = document.getElementById('deck');
+  deck.addEventListener('touchstart', function(e){
+    if (e.target.closest('.builder, button')) { sx = null; return; }
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+  }, {passive:true});
+  deck.addEventListener('touchend', function(e){
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(cur + (dx < 0 ? 1 : -1));
+    sx = null;
+  });
+
+  /* ---------- Pantalla completa ---------- */
+  var fsBtn = document.getElementById('fs');
+  var root = document.documentElement;
+  var canFs = !!(root.requestFullscreen || root.webkitRequestFullscreen);
+  if (!canFs) fsBtn.hidden = true;
+  function toggleFs(){
+    if (!canFs) return;
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    if (fsEl){ (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+    else { var p = (root.requestFullscreen || root.webkitRequestFullscreen).call(root); if (p && p.catch) p.catch(function(){}); }
+  }
+  fsBtn.addEventListener('click', toggleFs);
+
+  /* ---------- Arma tu Brasa ---------- */
+  var OPTS = {
+    pan:   {n:1, name:'Pan', type:'radio', o:[
+      {v:'brioche', l:'Brioche', c:'#D98A35', d:1},
+      {v:'papa', l:'Pan de papa', c:'#E8AE57'},
+      {v:'integral', l:'Integral', c:'#9A6234'},
+      {v:'sin', l:'Sin pan (en hojas de lechuga)', c:'#5E9B3A', omit:1}]},
+    prot:  {n:2, name:'Proteína', type:'radio', o:[
+      {v:'res', l:'Res a la parrilla', c:'#4A2A1A', d:1},
+      {v:'pollo', l:'Pollo a la parrilla', c:'#B9773F'},
+      {v:'chorizo', l:'Chorizo parrillero', c:'#8E2F22'},
+      {v:'hongos', l:'Hongos a la parrilla', c:'#6E5A48'},
+      {v:'sin', l:'Sin proteína', omit:1}]},
+    porcion:{n:3, name:'Porción', type:'radio', hint:'Peso aproximado de la proteína (ilustrativo).', o:[
+      {v:'simple', l:'Simple · 120 g', g:120, d:1},
+      {v:'doble', l:'Doble · 240 g', g:240}]},
+    queso: {n:4, name:'Queso', type:'radio', o:[
+      {v:'cheddar', l:'Cheddar', c:'#F2A93B', d:1},
+      {v:'andino', l:'Queso andino', c:'#F1DE9C'},
+      {v:'sin', l:'Sin queso', omit:1}]},
+    veg:   {n:5, name:'Vegetales', type:'check', hint:'Marca los que quieras; sin marcar = sin vegetales.', o:[
+      {v:'lechuga', l:'Lechuga', c:'#6BA539', d:1},
+      {v:'tomate', l:'Tomate', c:'#D9412B', d:1},
+      {v:'cebolla', l:'Cebolla encurtida', c:'#C84A86'},
+      {v:'palta', l:'Palta', c:'#9BBF4A'},
+      {v:'pepinillo', l:'Pepinillos', c:'#7C8F2E'}]},
+    salsa: {n:6, name:'Salsa', type:'radio', o:[
+      {v:'panca', l:'Ají panca', c:'#9E2B1E', d:1},
+      {v:'huacatay', l:'Huacatay', c:'#7FA046'},
+      {v:'rocoto', l:'Rocoto', c:'#D23A1F'},
+      {v:'amarillo', l:'Ají amarillo', c:'#F0B323'},
+      {v:'sin', l:'Sin salsa', omit:1}]},
+    extras:{n:7, name:'Extras', type:'check', hint:'Opcionales.', o:[
+      {v:'huevo', l:'Huevo frito', c:'#FFF1C9'},
+      {v:'tocino', l:'Tocino', c:'#B5523B'},
+      {v:'platano', l:'Plátano frito', c:'#E9B949'},
+      {v:'queso2', l:'Queso extra', c:'#F2A93B'}]},
+    acomp: {n:9, name:'Acompañamiento', type:'radio', o:[
+      {v:'papas', l:'Papas nativas', d:1},
+      {v:'camote', l:'Camote frito'},
+      {v:'yuca', l:'Yuca frita'},
+      {v:'ensalada', l:'Ensalada fresca'}]}
+  };
+
+  var form = document.getElementById('builder');
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function fieldset(key, extra){
+    var g = OPTS[key], h = '<fieldset id="fs-' + key + '"' + (extra || '') + '><legend><span class="n">' + g.n + '</span>' + g.name + '</legend>';
+    if (g.hint) h += '<p class="hint">' + g.hint + '</p>';
+    h += '<div class="opts">';
+    g.o.forEach(function(o){
+      h += '<label class="pill' + (o.omit ? ' omit' : '') + '"><input type="' + (g.type === 'radio' ? 'radio' : 'checkbox') + '" name="' + key + '" value="' + o.v + '"' + (o.d ? ' checked' : '') + '><span>' + (o.c ? '<i style="background:' + o.c + '"></i>' : '') + esc(o.l) + '</span></label>';
+    });
+    return h + '</div></fieldset>';
+  }
+  form.innerHTML =
+    fieldset('pan') + fieldset('prot') + fieldset('porcion') + fieldset('queso') +
+    fieldset('veg', ' class="wide"') + fieldset('salsa', ' class="wide"') + fieldset('extras', ' class="wide"') +
+    '<fieldset class="wide" id="fs-combo"><legend><span class="n">8</span>Combo</legend>' +
+      '<label class="toggle"><input type="checkbox" name="combo" id="combo"><span class="sw"></span>Hacerlo combo y elegir acompañamiento</label></fieldset>' +
+    fieldset('acomp', ' class="wide" hidden');
+
+  function find(key, v){ for (var i = 0; i < OPTS[key].o.length; i++) if (OPTS[key].o[i].v === v) return OPTS[key].o[i]; return null; }
+  function radio(key){ var el = form.querySelector('input[name="' + key + '"]:checked'); return el ? find(key, el.value) : null; }
+  function checks(key){ return Array.prototype.map.call(form.querySelectorAll('input[name="' + key + '"]:checked'), function(el){ return find(key, el.value); }); }
+
+  var stackEl = document.getElementById('stack'), sumEl = document.getElementById('summary');
+  var weightEl = document.getElementById('weight'), protEl = document.getElementById('protein');
+  var comboTag = document.getElementById('comboTag'), statusEl = document.getElementById('status');
+  var fsPorcion = document.getElementById('fs-porcion'), fsAcomp = document.getElementById('fs-acomp');
+  var comboEl = document.getElementById('combo');
+
+  function layer(cls, color){ return '<div class="layer ' + cls + '" style="background:' + color + '"></div>'; }
+
+  function update(){
+    var pan = radio('pan'), prot = radio('prot'), por = radio('porcion'), queso = radio('queso'), salsa = radio('salsa'), acomp = radio('acomp');
+    var veg = checks('veg'), ext = checks('extras'), combo = comboEl.checked;
+    var noProt = !prot || prot.omit;
+    fsPorcion.disabled = noProt;
+    fsAcomp.hidden = !combo;
+    comboTag.hidden = !combo;
+
+    // Pila visual
+    var L = [];
+    L.push(pan.omit ? layer('l-leaf', '#5E9B3A') : layer('l-top', pan.c));
+    if (!salsa.omit) L.push(layer('l-sauce', salsa.c));
+    veg.forEach(function(v){ L.push(layer('l-veg', v.c)); });
+    ext.forEach(function(x){ L.push(layer(x.v === 'queso2' ? 'l-chs' : 'l-ext', x.c)); });
+    if (!queso.omit) L.push(layer('l-chs', queso.c));
+    if (!noProt){ L.push(layer('l-pat', prot.c)); if (por.v === 'doble') L.push(layer('l-pat', prot.c)); }
+    L.push(pan.omit ? layer('l-leaf', '#4E8A2E') : layer('l-bot', pan.c));
+    stackEl.innerHTML = L.join('');
+
+    // Resumen
+    function row(k, val, omit){ return '<dt>' + k + '</dt><dd' + (omit ? ' class="omit"' : '') + '>' + esc(val) + '</dd>'; }
+    var h = '';
+    h += row('Pan', pan.l, pan.omit);
+    h += row('Proteína', prot.l, noProt);
+    h += row('Porción', noProt ? 'No aplica' : (por.v === 'doble' ? 'Doble' : 'Simple'), noProt);
+    h += row('Queso', queso.l, queso.omit);
+    h += row('Vegetales', veg.length ? veg.map(function(v){ return v.l; }).join(', ') : 'Sin vegetales', !veg.length);
+    h += row('Salsa', salsa.l, salsa.omit);
+    h += row('Extras', ext.length ? ext.map(function(v){ return v.l; }).join(', ') : 'Sin extras', !ext.length);
+    h += row('Combo', combo ? 'Sí · ' + acomp.l : 'Solo hamburguesa', !combo);
+    sumEl.innerHTML = h;
+
+    weightEl.textContent = noProt ? 'No aplica' : por.g + ' g aprox.';
+    protEl.textContent = noProt ? 'No aplica' : 'Por calcular según receta';
+    statusEl.textContent = '';
+  }
+
+  form.addEventListener('change', update);
+  document.getElementById('reset').addEventListener('click', function(){ form.reset(); update(); statusEl.textContent = 'Pedido reiniciado.'; });
+  document.getElementById('confirm').addEventListener('click', function(){
+    statusEl.textContent = '✓ Combinación revisada. En el local se confirmaría en mostrador (demostración).';
+  });
+
+  function setRadio(key, v){ var el = form.querySelector('input[name="' + key + '"][value="' + v + '"]'); if (el) el.checked = true; }
+  document.getElementById('tryAnticuchera').addEventListener('click', function(){
+    form.reset();
+    setRadio('pan', 'brioche'); setRadio('prot', 'res'); setRadio('porcion', 'simple');
+    setRadio('queso', 'sin'); setRadio('salsa', 'panca');
+    form.querySelectorAll('input[name="veg"], input[name="extras"]').forEach(function(el){ el.checked = el.value === 'cebolla'; });
+    update();
+    go(7);
+    statusEl.textContent = 'La Anticuchera cargada: cámbiale lo que quieras.';
+  });
+
+  update();
+  var start = parseInt((location.hash || '').replace('#', ''), 10);
+  go(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+</body>
+</html>
